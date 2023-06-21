@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>新增页面</title>
+	<link rel="stylesheet" href="../../../component/pear/css/pear.css" />
+</head>
+
+<body>
+	<form class="layui-form" action="">
+		<div class="mainBox">
+			<div class="main-container">
+
+				<div class="layui-form-item">
+					<label class="layui-form-label">患者</label>
+					<div class="layui-input-block">
+						<select name="patient" id="patient" class="layui-input" lay-verify="title" autocomplete="off">
+							<option value=""></option>
+						</select>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">医生</label>
+					<div class="layui-input-block">
+						<select name="doctor" id="doctor" class="layui-input" lay-verify="title" autocomplete="off">
+							<option value=""></option>
+						</select>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">科室</label>
+					<div class="layui-input-block">
+						<select name="department" id="department" class="layui-input" lay-verify="title"
+							autocomplete="off">
+							<option value=""></option>
+						</select>
+					</div>
+				</div>
+
+				<div class="layui-form-item">
+					<label class="layui-form-label">时间</label>
+					<div class="layui-input-block">
+						<input name="time" type="text" class="layui-input" id="ID-laydate-type-datetime"
+							placeholder="yyyy-MM-dd HH:mm:ss" lay_filter="time">
+					</div>
+				</div>
+
+				<div class="layui-form-item">
+					<label class="layui-form-label">病情描述</label>
+					<div class="layui-input-block">
+						<input type="text" name="diagnosis" lay-verify="title" autocomplete="off"
+							placeholder="请输入联系方式" class="layui-input">
+					</div>
+				</div>
+
+				<div class="layui-form-item">
+					<label class="layui-form-label">备注</label>
+					<div class="layui-input-block">
+						<input type="text" name="remarks" lay-verify="title" autocomplete="off" placeholder="请输入联系方式"
+							class="layui-input">
+					</div>
+				</div>
+
+			</div>
+		</div>
+		<div class="bottom">
+			<div class="button-container">
+				<button type="submit" class="pear-btn pear-btn-primary pear-btn-sm" lay-submit=""
+					lay-filter="user-save">
+					<i class="layui-icon layui-icon-ok"></i>
+					提交
+				</button>
+				<button type="reset" class="pear-btn pear-btn-sm">
+					<i class="layui-icon layui-icon-refresh"></i>
+					重置
+				</button>
+			</div>
+		</div>
+	</form>
+
+	<!-- <script src="../../../component/layui-v2.5.5/layui.js"></script> -->
+	<script src="../../../component/layui/layui.js"></script>
+	<script src="../../../component/pear/pear.js"></script>
+	<script>
+		layui.use(['form', 'jquery', 'upload', 'layedit'], function () {
+			let form = layui.form;
+			let upload = layui.upload;
+			let $ = layui.jquery;
+			let layedit = layui.layedit;
+			let laydate = layui.laydate;
+
+			// 封装获取下拉框内容的函数
+			function getOptions(url, selectId) {
+				$.get(url, function (data) {
+					var options = [...new Set(data)].map(title => `<option>${title}</option>`).join(''); // 将数据转换为下拉框选项
+					$(`#${selectId}`).html(options); // 将选项添加到指定的下拉框中
+					form.render('select'); // 重新渲染下拉框
+				});
+			}
+
+			// 调用函数获取下拉框内容
+			getOptions('/api/patient', 'patient');
+			getOptions('/api/doctor', 'doctor');
+			getOptions('/api/department', 'department');
+
+			// 日期时间选择器
+			laydate.render({
+				elem: '#ID-laydate-type-datetime',
+				type: 'datetime'
+			});
+
+			//上传
+			form.on('submit(user-save)', function (data) {
+				var selectedOptions = $('select').map(function () { // 获取所有下拉框选中的值
+					return $(this).find('option:selected').val();
+				}).get();
+				var formDataArray = $(data.form).serializeArray(); // 将表单数据序列化为数组
+				var formDataObject = formDataArray.reduce(function (obj, item) { // 将数组转换为对象
+					obj[item.name] = item.value;
+					return obj;
+				}, {});
+				formDataObject.selectedOptions = selectedOptions; // 将选中的值添加到表单数据对象中
+				var formDataJSON = JSON.stringify(formDataObject); // 将表单数据对象转换为JSON字符串
+				$.ajax({
+					url: '/addRecord',
+					data: formDataJSON,
+					dataType: 'json',
+					contentType: 'application/json',
+					type: 'post',
+					success: function (result) {
+						if (result.code == "200") {
+							layer.msg(result.msg, {
+								icon: 1,
+								time: 1000
+							}, function () {
+								parent.layer.close(parent.layer.getFrameIndex(window.name)); // 关闭当前页
+								parent.layui.table.reload("user-table");
+							});
+						} else {
+							layer.msg(result.msg, {
+								icon: 2,
+								time: 1000
+							});
+						}
+					}
+				})
+				return false; // 阻止表单提交
+			});
+
+		})
+	</script>
+	<script>
+	</script>
+</body>
+
+</html>

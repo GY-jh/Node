@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Demo</title>
+	<link href="../../component/layui/css/layui.css" rel="stylesheet">
+</head>
+
+<body style="text-align:center;">
+	<div class="layui-carousel" id="ID-carousel-demo-video" style="text-align:center;">
+		<div carousel-item>
+			<div>
+				<video src="../../video/2.mp4" controls width="1300px" height="600px" autoplay></video>
+			</div>
+		</div>
+	</div>
+
+	<script src="../../component/layui/layui.js"></script>
+	<script>
+		layui.use(function () {
+			var carousel = layui.carousel;
+			// 渲染 - 视频轮播
+			carousel.render({
+				elem: '#ID-carousel-demo-video',
+				width: '1300px',
+				height: '600px',
+				interval: 3000
+			});
+		});
+
+		// 获取视频元素
+		const video = document.querySelector('#ID-carousel-demo-video video');
+
+		// 监听视频播放结束事件
+		video.addEventListener('ended', function () {
+			// 重置视频播放进度
+			video.currentTime = 0;
+			// 重新播放视频
+			video.play();
+		});
+
+
+		window.onload = function () {
+			var video = document.getElementsByTagName('video')[0];
+			video.play();
+		}
+	</script>
+</body>
+
+</html>

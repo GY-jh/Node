@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<title>(Node 课设) 登录</title>
+	<!-- 样 式 文 件 -->
+	<link rel="stylesheet" href="component/pear/css/pear.css" />
+	<link rel="stylesheet" href="admin/css/other/login.css" />
+</head>
+<!-- 代 码 结 构 -->
+
+<body background="admin/images/background.svg" style="background-size: cover;">
+	<form class="layui-form" action="javascript:void(0);">
+		<div class="layui-form-item">
+			<img class="logo" src="admin/images/logo.jpg" />
+			<div class="title">医疗管理系统</div>
+		</div>
+		<div class="layui-form-item">
+			<input name="identification" placeholder="账 号  " lay-verify="required" hover class="layui-input" />
+		</div>
+		<div class="layui-form-item">
+			<input name="password" placeholder="密 码  " lay-verify="required" hover class="layui-input" />
+		</div>
+		<div class="layui-form-item">
+			<input name="captcha" placeholder="验证码  " hover lay-verify="required"
+				class="code layui-input layui-input-inline" />
+			<img src="/getVerification" class="codeImage" id="yzm" title="看不清，换一张"
+				style="cursor: pointer;content: attr(title);" />
+		</div>
+		<div class="layui-form-item">
+			<input type="checkbox" name="" title="记住密码" lay-skin="primary" checked>
+		</div>
+		<div class="layui-form-item">
+			<button type="button" class="pear-btn pear-btn-success login" lay-submit lay-filter="login">
+				登 入
+			</button>
+		</div>
+	</form>
+	<!-- 资 源 引 入 -->
+	<script src="component/layui/layui.js"></script>
+	<script src="component/pear/pear.js"></script>
+	<script>
+		layui.use(['form', 'button', 'popup'], function () {
+			var form = layui.form;
+			var button = layui.button;
+			var popup = layui.popup;
+			var $ = layui.$;
+
+			// 登 录 提 交
+			form.on('submit(login)', function (data) {
+
+				/// 验证
+
+				/// 登录
+				$.ajax({
+					url: '/login',
+					type: 'post',
+					data: data.field,
+					success: function (data) {
+						if (data) {
+							if (data.code == "200") {
+
+								// console.log(data.data);
+								let userData = JSON.stringify(data.data);
+								// console.log(userData);
+								sessionStorage.setItem("userData", userData);
+
+								button.load({
+									elem: '.login',
+									time: 1500,
+									done: function () {
+										popup.success("登录成功", function () {
+											location.href = "/index.html"
+										});
+									}
+								})
+							} else {
+								layer.msg(data.msg)
+							}
+						}
+					}
+				})
+
+				return false;
+			});
+
+			var codeImage = document.getElementById('yzm');
+			codeImage.addEventListener('click', function () {
+				this.src = '/getVerification?' + Math.random(); // 添加随机数参数，避免缓存问题
+			});
+
+		})
+	</script>
+</body>
+
+</html>

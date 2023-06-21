@@ -1,0 +1,52 @@
+[
+	{
+		"id": "system",
+		"title": "医院信息管理",
+		"icon": "layui-icon layui-icon-home",
+		"type": 0,
+		"href": "",
+		"children": [
+			{
+				"id": 201,
+				"title": "医生管理",
+				"icon": "layui-icon layui-icon-face-cry",
+				"type": 1,
+				"openType": "_iframe",
+				"href": "view/system/role2.html"
+			}
+		]
+	},
+	{
+		"id": "system",
+		"title": "患者信息管理",
+		"icon": "layui-icon layui-icon-chart",
+		"type": 0,
+		"href": "",
+		"children": [
+			{
+				"id": 301,
+				"title": "患者管理",
+				"icon": "layui-icon layui-icon-face-cry",
+				"type": 1,
+				"openType": "_iframe",
+				"href": "view/system/patient2.html"
+			},
+			{
+				"id": 302,
+				"title": "就诊记录",
+				"icon": "layui-icon layui-icon-face-cry",
+				"type": 1,
+				"openType": "_iframe",
+				"href": "view/system/record2.html"
+			}
+		]
+	},
+	{
+		"id": 1,
+		"title": "百度一下",
+		"icon": "layui-icon layui-icon-console",
+		"type": 1,
+		"openType": "_iframe",
+		"href": "http://www.bing.com"
+	}
+]

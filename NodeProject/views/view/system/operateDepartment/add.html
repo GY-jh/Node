@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>新增页面</title>
+	<link rel="stylesheet" href="../../../component/pear/css/pear.css" />
+</head>
+
+<body>
+	<form class="layui-form" action="">
+		<div class="mainBox">
+			<div class="main-container">
+				<div class="layui-form-item">
+					<label class="layui-form-label">科室名称</label>
+					<div class="layui-input-block">
+						<input type="text" name="name" lay-verify="title" autocomplete="off" placeholder="请输入姓名"
+							class="layui-input">
+					</div>
+				</div>
+
+				<div class="layui-form-item">
+					<label class="layui-form-label">科室主任</label>
+					<div class="layui-input-block">
+						<select name="director" id="title" class="layui-input" lay-verify="title" autocomplete="off">
+							<option value=""></option>
+						</select>
+					</div>
+				</div>
+
+			</div>
+		</div>
+		<div class="bottom">
+			<div class="button-container">
+				<button type="submit" class="pear-btn pear-btn-primary pear-btn-sm" lay-submit=""
+					lay-filter="user-save">
+					<i class="layui-icon layui-icon-ok"></i>
+					提交
+				</button>
+				<button type="reset" class="pear-btn pear-btn-sm">
+					<i class="layui-icon layui-icon-refresh"></i>
+					重置
+				</button>
+			</div>
+		</div>
+	</form>
+	<script src="../../../component/layui/layui.js"></script>
+	<script src="../../../component/pear/pear.js"></script>
+	<script>
+		layui.use(['form', 'jquery', 'upload', 'layedit'], function () {
+			let form = layui.form;
+			let upload = layui.upload;
+			let $ = layui.jquery;
+			let layedit = layui.layedit;
+
+			//获取下拉框内容
+			$.get('/api/director', function (data) {
+				// const options = data.map(title => `<option>${title}</option>`).join('');
+				const options = [...new Set(data)].map(title => `<option>${title}</option>`).join('');
+				$('#title').html(options);
+				form.render('select');
+			});
+
+			form.on('submit(user-save)', function (data) {
+				var selectedOption = $('#title option:selected').val();
+				var formDataArray = $(data.form).serializeArray();
+				var formDataObject = formDataArray.reduce(function (obj, item) {
+					obj[item.name] = item.value;
+					return obj;
+				}, {});
+				formDataObject.selectedOption = selectedOption;
+				var formDataJSON = JSON.stringify(formDataObject);
+				$.ajax({
+					url: '/addDepartment',
+					// data: JSON.stringify(data.field),
+					data: formDataJSON,
+					dataType: 'json',
+					contentType: 'application/json',
+					type: 'post',
+					success: function (result) {
+						if (result.code == "200") {
+							layer.msg(result.msg, {
+								icon: 1,
+								time: 1000
+							}, function () {
+								parent.layer.close(parent.layer.getFrameIndex(window
+									.name)); //关闭当前页
+								parent.layui.table.reload("user-table");
+							});
+						} else {
+							layer.msg(result.msg, {
+								icon: 2,
+								time: 1000
+							});
+						}
+					}
+				})
+				return false;
+			});
+		})
+	</script>
+	<script>
+	</script>
+</body>
+
+</html>

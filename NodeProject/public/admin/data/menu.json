@@ -1,0 +1,85 @@
+[
+	{
+		"id": 1,
+		"title": "百度一下",
+		"icon": "layui-icon layui-icon-console",
+		"type": 1,
+		"openType": "_iframe",
+		"href": "http://www.bing.com"
+	},
+	{
+		"id": "system",
+		"title": "用户信息",
+		"icon": "layui-icon layui-icon-user",
+		"type": 0,
+		"href": "",
+		"children": [
+			{
+				"id": 101,
+				"title": "用户管理",
+				"icon": "layui-icon layui-icon-face-smile",
+				"type": 1,
+				"openType": "_iframe",
+				"href": "view/system/user.html"
+			}
+		]
+	},
+	{
+		"id": "system",
+		"title": "医院信息管理",
+		"icon": "layui-icon layui-icon-home",
+		"type": 0,
+		"href": "",
+		"children": [
+			{
+				"id": 201,
+				"title": "医生管理",
+				"icon": "layui-icon layui-icon-face-cry",
+				"type": 1,
+				"openType": "_iframe",
+				"href": "view/system/role.html"
+			},
+			{
+				"id": 202,
+				"title": "科室管理",
+				"icon": "layui-icon layui-icon-home",
+				"type": 1,
+				"openType": "_iframe",
+				"href": "view/system/department.html"
+			},
+			{
+				"id": 203,
+				"title": "职称管理",
+				"icon": "layui-icon layui-icon-component",
+				"type": 1,
+				"openType": "_iframe",
+				"href": "view/system/Rank.html"
+			}
+		]
+	},
+	{
+		"id": "system",
+		"title": "患者信息管理",
+		"icon": "layui-icon layui-icon-chart",
+		"type": 0,
+		"href": "",
+		"children": [
+			{
+				"id": 301,
+				"title": "患者管理",
+				"icon": "layui-icon layui-icon-face-cry",
+				"type": 1,
+				"openType": "_iframe",
+				"href": "view/system/patient.html"
+			},
+			{
+				"id": 302,
+				"title": "就诊记录",
+				"icon": "layui-icon layui-icon-face-cry",
+				"type": 1,
+				"openType": "_iframe",
+				"href": "view/system/record.html"
+			}
+		]
+	}
+]

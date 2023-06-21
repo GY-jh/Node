@@ -1,0 +1,70 @@
+1、初始化项目
+npm init -y
+npm install
+
+2.数据库设计
+科室表department（id，name(科室名称)，director（科室主任））
+职称表title（id，name），
+患者表（patientid，name，gender，age，contact，picture），
+医生表doctor（id，name，gender，age，phone，title(职称)，picture(头像)），
+病历表record（id，patient，doctor，department，time，diagnosis，remarks）
+触发器：
+CREATE TRIGGER update_doctor_name
+AFTER UPDATE ON doctor
+FOR EACH ROW
+BEGIN
+    UPDATE record SET doctor = NEW.name WHERE doctor = OLD.name;
+    UPDATE department SET director = NEW.name WHERE director = OLD.name;
+END;
+
+CREATE TRIGGER update_patient_name
+AFTER UPDATE ON patient
+FOR EACH ROW
+BEGIN
+    UPDATE record SET patient = NEW.name WHERE patient = OLD.name;
+END;
+
+CREATE TRIGGER update_department_name
+AFTER UPDATE ON department
+FOR EACH ROW
+BEGIN
+    UPDATE record SET department = NEW.name WHERE department = OLD.name;
+END;
+
+CREATE TRIGGER update_title_name
+AFTER UPDATE ON title
+FOR EACH ROW
+BEGIN
+    UPDATE doctor SET title = NEW.name WHERE title = OLD.name;
+END;
+
+CREATE TRIGGER delete_doctor
+AFTER DELETE ON doctor
+FOR EACH ROW
+BEGIN
+    UPDATE record SET doctor = '其他医生' WHERE doctor = OLD.name;
+    UPDATE department SET director = '无' WHERE director = OLD.name;
+END;
+
+CREATE TRIGGER delete_patient
+AFTER DELETE ON patient
+FOR EACH ROW
+BEGIN
+    UPDATE record SET remarks = CONCAT('该病人已结束治疗，', remarks) WHERE patient = OLD.name;
+END;
+
+CREATE TRIGGER delete_department
+AFTER DELETE ON department
+FOR EACH ROW
+BEGIN
+    UPDATE record SET department = '其他' WHERE department = OLD.name;
+END;
+
+CREATE TRIGGER delete_title
+AFTER DELETE ON title
+FOR EACH ROW
+BEGIN
+    UPDATE doctor SET title = '其他' WHERE title = OLD.name;
+END;
+
+3.页面说明

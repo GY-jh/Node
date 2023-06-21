@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>新增页面</title>
+	<link rel="stylesheet" href="../../../component/pear/css/pear.css" />
+</head>
+
+<body>
+	<form class="layui-form" action="">
+		<div class="mainBox">
+			<div class="main-container">
+				<input type="hidden" value="{{id}}" name="id">
+				<div class="layui-form-item">
+					<label class="layui-form-label">姓名</label>
+					<div class="layui-input-block">
+						<input type="text" value="{{name}}" name="name" lay-verify="required" autocomplete="off"
+							placeholder="请输入姓名" class="layui-input">
+					</div>
+				</div>
+
+				<div class="layui-form-item">
+					<label class="layui-form-label">性别</label>
+					<div class="layui-input-block">
+						<select name="gender" id="gender" class="layui-input" lay-verify="required" autocomplete="off">
+							<option {{if gender=="男" }}selected{{/if}}>男</option>
+							<option {{if gender=="女" }}selected{{/if}}>女</option>
+						</select>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">年龄</label>
+					<div class="layui-input-block">
+						<input type="text" value="{{age}}" name="age" lay-verify="required|age" autocomplete="off"
+							placeholder="请输入年龄" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">联系方式</label>
+					<div class="layui-input-block">
+						<input type="text" value="{{phone}}" name="phone" lay-verify="required|phone" autocomplete="off"
+							placeholder="请输入联系方式" class="layui-input">
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<label class="layui-form-label">职称</label>
+					<div class="layui-input-block">
+						<select name="title" id="title" class="layui-input" lay-verify="title" autocomplete="off">
+							<option value=""></option>
+						</select>
+					</div>
+				</div>
+
+
+				<!-- 头像开始 -->
+				<div class="layui-form-item">
+					<label class="layui-form-label">头像</label>
+					<div class="layui-input-block">
+						<button type="button" id="upload" class="layui-btn">
+							<i class="layui-icon">&#xe67c</i> 上传头像
+							<input type="hidden" value="{{picture}}" id="picture" name="picture">
+						</button>
+						<br>
+						<div
+							style="width: 200px;height: 200px;border: 3px solid #0099cc;border-radius: 5px; padding: 3px;">
+							<img src="{{picture}}" alt="" id="tx" style="max-width: 200px;max-height: 200px;">
+						</div>
+					</div>
+				</div>
+				<!-- 头像结束 -->
+
+			</div>
+		</div>
+		<div class="bottom">
+			<div class="button-container">
+				<button type="submit" class="pear-btn pear-btn-primary pear-btn-sm" lay-submit=""
+					lay-filter="user-save">
+					<i class="layui-icon layui-icon-ok"></i>
+					提交
+				</button>
+				<button type="reset" class="pear-btn pear-btn-sm">
+					<i class="layui-icon layui-icon-refresh"></i>
+					重置
+				</button>
+			</div>
+		</div>
+	</form>
+	<script src="../../../component/layui/layui.js"></script>
+	<script src="../../../component/pear/pear.js"></script>
+	<script>
+		layui.use(['form', 'jquery', 'upload', 'layedit', 'layer'], function () {
+			let form = layui.form;
+			let upload = layui.upload;
+			let $ = layui.jquery;
+			let layedit = layui.layedit;
+			let layer = layui.layer;
+
+			// 自定义验证规则
+			form.verify({
+				phone: [/^1\d{10}$/, '请输入正确的11位手机号码'],
+				age: function (value) {
+					if (!/^\d+$/.test(value) || value <= 0 || value > 150) {
+						return '请输入正确的年龄';
+					}
+				}
+			});
+			// 监听表单提交事件
+			form.on('submit(user-save)', function (data) {
+				// 验证表单数据
+				if (!data.field.name) { layer.msg('请输入姓名'); return false; }
+				if (!data.field.age) { layer.msg('请输入年龄'); return false; }
+				if (!data.field.phone) { layer.msg('请输入电话'); return false; }
+				// 提交表单数据
+				layer.msg(JSON.stringify(data.field));
+				return false;
+			});
+			// 渲染表单
+			form.render();
+
+
+			//获取下拉框内容
+			$.get('/api/titles', function (data) {
+				// const options = data.map(title => `<option>${title}</option>`).join('');
+				const options = [...new Set(data)].map(title => `<option>${title}</option>`).join('');//去重
+				// console.log(options);
+				$('#title').html(options);
+				let title = '<%= title %>'; // 后端传递的title值
+				// console.log(title);
+				$('#title').val(title); // 选中对应的选项
+				form.render('select'); //重新渲染
+			});
+
+			//上传头像 js 开始
+			upload.render({
+				elem: "#upload",
+				url: "/upload",
+				auto: true,//选择文件之后自动上传
+				bindAction: "#commit",
+				before: function () {//上传之前回调
+					this.data = {
+						name: $("input[name='name']").val(),
+					}
+				},
+				choose: function (obj) { //选择文件之后回调
+					obj.preview(function (index, file, result) {
+					})
+				},
+				done: function (res, index, upload) {
+					$("#tx").attr("src", res.src);//回显图片
+					$("#picture").val(res.src);//给隐藏域赋值
+				},
+				error: function (res, index, upload) {
+					layer.alert("上传失败！")
+				}
+			})
+			//结束
+
+			form.on('submit(user-save)', function (data) {
+				var selectedOption = $('#title option:selected').val();// 获取下拉框选中的值
+				var formDataArray = $(data.form).serializeArray();// 将表单数据序列化为数组
+				// 将表单数据数组转化为对象
+				var formDataObject = formDataArray.reduce(function (obj, item) {
+					obj[item.name] = item.value;
+					return obj;
+				}, {});
+				formDataObject.selectedOption = selectedOption;// 将下拉框选中的值添加到表单数据对象中
+				var formDataJSON = JSON.stringify(formDataObject);// 将表单数据对象转化为JSON字符串
+				$.ajax({
+					url: '/updateDoctort',
+					// data: JSON.stringify(data.field),
+					data: formDataJSON,
+					dataType: 'json',
+					contentType: 'application/json',
+					type: 'post',
+					success: function (result) {
+						if (result.code == "200") {
+							layer.msg(result.msg, {
+								icon: 1,
+								time: 1000
+							}, function () {
+								parent.layer.close(parent.layer.getFrameIndex(window
+									.name)); //关闭当前页
+								parent.layui.table.reload("user-table");
+							});
+						} else {
+							layer.msg(result.msg, {
+								icon: 2,
+								time: 1000
+							});
+						}
+					}
+				})
+				return false;
+			});
+		})
+	</script>
+	<script>
+	</script>
+</body>
+
+</html>
