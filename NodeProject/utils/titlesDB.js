@@ -18,7 +18,7 @@ function query(sql, res) {
     connection.query(sql, (err, results) => {
         if (err) {
             console.error(err);
-            res.status(500).send('内部服务器错误');
+            res.status(500).send('内部服务器错误！');
         } else {
             const titles = results.map(result => result.name);
             res.json(titles);
